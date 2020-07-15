@@ -1,11 +1,11 @@
 package vg.civcraft.mc.civmodcore.util;
 
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import net.minecraft.server.v1_14_R1.IChatBaseComponent;
-import net.minecraft.server.v1_14_R1.PacketPlayOutTitle;
-import net.minecraft.server.v1_14_R1.PlayerConnection;
+import net.minecraft.server.v1_16_R1.IChatBaseComponent;
+import net.minecraft.server.v1_16_R1.PacketPlayOutTitle;
+import net.minecraft.server.v1_16_R1.PlayerConnection;
 
 /**
  * Allows sending titles to players with full customization, which the bukkit/spigot API doesnt offer. A title consists
@@ -15,6 +15,7 @@ import net.minecraft.server.v1_14_R1.PlayerConnection;
  * take the fade out time to disappear again completly. When overlapping titles, the later one will completly override
  * the previous one.
  *
+ * "...which the bukkit/spigot API doesnt offer" doesn't spigot offer this now?
  */
 public class Title {
 	private String title;

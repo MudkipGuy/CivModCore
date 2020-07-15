@@ -1,11 +1,11 @@
 package vg.civcraft.mc.civmodcore.itemHandling;
 
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
-import net.minecraft.server.v1_14_R1.NBTTagList;
+import net.minecraft.server.v1_16_R1.NBTTagCompound;
+import net.minecraft.server.v1_16_R1.NBTTagList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -579,7 +579,7 @@ public class ItemMap {
 	private static ItemStack createMapConformCopy(ItemStack is) {
 		ItemStack copy = is.clone();
 		copy.setAmount(1);
-		net.minecraft.server.v1_14_R1.ItemStack s = CraftItemStack.asNMSCopy(copy);
+		net.minecraft.server.v1_16_R1.ItemStack s = CraftItemStack.asNMSCopy(copy);
 		if (s == null) {
 			log.info("Attempted to create map conform copy of " + copy.toString()
 					+ ", but couldn't because this item can't be held in inventories since Minecraft 1.8");
@@ -598,12 +598,13 @@ public class ItemMap {
 	 * @param map Java Maps and Lists representing NBT data
 	 * @return Cloned ItemStack with amount set to amt and NBT set to map.
 	 */
+	
 	public static ItemStack enrichWithNBT(ItemStack is, int amt, Map<String, Object> map) {
 		log.fine("Received request to enrich " + is.toString());
 		ItemStack copy = is.clone();
 		amt = (amt < 1 ? 1 : amt > is.getMaxStackSize() ? is.getMaxStackSize() : amt);
 		copy.setAmount(amt);
-		net.minecraft.server.v1_14_R1.ItemStack s = CraftItemStack.asNMSCopy(copy);
+		net.minecraft.server.v1_16_R1.ItemStack s = CraftItemStack.asNMSCopy(copy);
 		if (s == null) {
 			log.severe("Failed to create enriched copy of " + copy.toString());
 			return null;
@@ -627,4 +628,5 @@ public class ItemMap {
 	public static NBTTagList listToNBT(NBTTagList base, List<Object> list) {
 		return TagManager.listToNBT(base, list);
 	}
+	
 }

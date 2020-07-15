@@ -1,5 +1,7 @@
 package vg.civcraft.mc.civmodcore.itemHandling;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,24 +10,25 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.MemorySection;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import net.minecraft.server.v1_14_R1.NBTBase;
-import net.minecraft.server.v1_14_R1.NBTTagByte;
-import net.minecraft.server.v1_14_R1.NBTTagByteArray;
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
-import net.minecraft.server.v1_14_R1.NBTTagDouble;
-import net.minecraft.server.v1_14_R1.NBTTagFloat;
-import net.minecraft.server.v1_14_R1.NBTTagInt;
-import net.minecraft.server.v1_14_R1.NBTTagIntArray;
-import net.minecraft.server.v1_14_R1.NBTTagList;
-import net.minecraft.server.v1_14_R1.NBTTagLong;
-import net.minecraft.server.v1_14_R1.NBTTagShort;
-import net.minecraft.server.v1_14_R1.NBTTagString;
+import net.minecraft.server.v1_16_R1.NBTBase;
+import net.minecraft.server.v1_16_R1.NBTTagByte;
+import net.minecraft.server.v1_16_R1.NBTTagByteArray;
+import net.minecraft.server.v1_16_R1.NBTTagCompound;
+import net.minecraft.server.v1_16_R1.NBTTagDouble;
+import net.minecraft.server.v1_16_R1.NBTTagFloat;
+import net.minecraft.server.v1_16_R1.NBTTagInt;
+import net.minecraft.server.v1_16_R1.NBTTagIntArray;
+import net.minecraft.server.v1_16_R1.NBTTagList;
+import net.minecraft.server.v1_16_R1.NBTTagLong;
+import net.minecraft.server.v1_16_R1.NBTTagShort;
+import net.minecraft.server.v1_16_R1.NBTTagString;
 
 @Deprecated
 public class TagManager {
+	
 	private static final Logger log = Bukkit.getLogger();
 
 	private NBTTagCompound tag;
@@ -39,7 +42,7 @@ public class TagManager {
 			throw new IllegalArgumentException("Expected item stack parameter but NULL passed.");
 		}
 
-		net.minecraft.server.v1_14_R1.ItemStack s = CraftItemStack.asNMSCopy(is);
+		net.minecraft.server.v1_16_R1.ItemStack s = CraftItemStack.asNMSCopy(is);
 		this.tag = s.getTag();
 
 		if (this.tag == null) {
@@ -98,7 +101,16 @@ public class TagManager {
 		NBTTagList tagList = new NBTTagList();
 
 		for (String s : list) {
-			tagList.add(new NBTTagString(s));
+			//code example I found to access a private constructor -MudkipGuy
+	        try {
+	        	Constructor<NBTTagString> constructor = NBTTagString.class.getDeclaredConstructor();
+				constructor.setAccessible(true);
+		        NBTTagString result = constructor.newInstance();
+		        
+				tagList.add(result);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		this.tag.set(key, tagList);
@@ -119,7 +131,16 @@ public class TagManager {
 		NBTTagList tagList = new NBTTagList();
 
 		for (Integer i : list) {
-			tagList.add(new NBTTagInt(i));
+			//code example I found to access a private constructor -MudkipGuy
+	        try {
+	        	Constructor<NBTTagInt> constructor = NBTTagInt.class.getDeclaredConstructor(Integer.class);
+				constructor.setAccessible(true);
+				NBTTagInt result = constructor.newInstance();
+		        
+				tagList.add(result);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		this.tag.set(key, tagList);
@@ -142,6 +163,7 @@ public class TagManager {
 	 * @param key
 	 * @return
 	 */
+	
 	@Deprecated
 	public List<Short> getShortList(String key) {
 		NBTTagList tagList = this.tag.getList(key, 2);
@@ -153,7 +175,7 @@ public class TagManager {
 
 		return list;
 	}
-
+	
 	/**
 	 * Deprecating this as well as of 1.12, even though technically it is still supported (nothing prevents the creation)
 	 * however since accessing a short list _is_, so should writing.
@@ -161,12 +183,21 @@ public class TagManager {
 	 * @param key
 	 * @param list
 	 */
+	
 	@Deprecated
 	public void setShortList(String key, List<Short> list) {
 		NBTTagList tagList = new NBTTagList();
 
 		for (Short s : list) {
-			tagList.add(new NBTTagShort(s));
+			try {
+				Constructor<NBTTagShort> constructor = NBTTagShort.class.getDeclaredConstructor(Short.class);
+				constructor.setAccessible(true);
+				NBTTagShort result = constructor.newInstance();
+
+				tagList.add(result);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		this.tag.set(key, tagList);
@@ -182,7 +213,7 @@ public class TagManager {
 
 	public ItemStack enrichWithNBT(ItemStack is) {
 
-		net.minecraft.server.v1_14_R1.ItemStack s = CraftItemStack.asNMSCopy(is);
+		net.minecraft.server.v1_16_R1.ItemStack s = CraftItemStack.asNMSCopy(is);
 
 		if (s == null) {
 			log.severe("Failed to create enriched copy of " + is.toString());
@@ -280,25 +311,88 @@ public class TagManager {
 				base.add(listToNBT(new NBTTagList(), (List<Object>) object));
 			} else if (object instanceof String) {
 				log.fine("Adding string " + object + " to list");
-				base.add(new NBTTagString((String) object));
+				//base.add(new NBTTagString((String) object));
+				try {
+					Constructor<NBTTagString> constructor = NBTTagString.class.getDeclaredConstructor(String.class);
+					constructor.setAccessible(true);
+					NBTTagString result = constructor.newInstance((String) object);
+
+					base.add(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else if (object instanceof Double) {
 				log.fine("Adding double " + object + " to list");
-				base.add(new NBTTagDouble((Double) object));
+				//base.add(new NBTTagDouble((Double) object));
+				try {
+					Constructor<NBTTagDouble> constructor = NBTTagDouble.class.getDeclaredConstructor(Double.class);
+					constructor.setAccessible(true);
+					NBTTagDouble result = constructor.newInstance((Double) object);
+
+					base.add(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else if (object instanceof Float) {
 				log.fine("Adding float " + object + " to list");
-				base.add(new NBTTagFloat((Float) object));
+				//base.add(new NBTTagFloat((Float) object));
+				try {
+					Constructor<NBTTagFloat> constructor = NBTTagFloat.class.getDeclaredConstructor(Float.class);
+					constructor.setAccessible(true);
+					NBTTagFloat result = constructor.newInstance((Float) object);
+
+					base.add(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else if (object instanceof Byte) {
 				log.fine("Adding byte " + object + " to list");
-				base.add(new NBTTagByte((Byte) object));
+				//base.add(new NBTTagByte((Byte) object));
+				try {
+					Constructor<NBTTagByte> constructor = NBTTagByte.class.getDeclaredConstructor(Byte.class);
+					constructor.setAccessible(true);
+					NBTTagByte result = constructor.newInstance((Byte) object);
+
+					base.add(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else if (object instanceof Short) {
 				log.fine("Adding short " + object + " to list");
-				base.add(new NBTTagShort((Short) object));
+				//base.add(new NBTTagShort((Short) object));
+				try {
+					Constructor<NBTTagByte> constructor = NBTTagByte.class.getDeclaredConstructor(Byte.class);
+					constructor.setAccessible(true);
+					NBTTagByte result = constructor.newInstance((Byte) object);
+
+					base.add(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else if (object instanceof Integer) {
 				log.fine("Adding integer " + object + " to list");
-				base.add(new NBTTagInt((Integer) object));
+				//base.add(new NBTTagInt((Integer) object));
+				try {
+					Constructor<NBTTagInt> constructor = NBTTagInt.class.getDeclaredConstructor(Integer.class);
+					constructor.setAccessible(true);
+					NBTTagInt result = constructor.newInstance((Integer) object);
+
+					base.add(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else if (object instanceof Long) {
 				log.fine("Adding long " + object + " to list");
-				base.add(new NBTTagLong((Long) object));
+				//base.add(new NBTTagLong((Long) object));
+				try {
+					Constructor<NBTTagLong> constructor = NBTTagLong.class.getDeclaredConstructor(Long.class);
+					constructor.setAccessible(true);
+					NBTTagLong result = constructor.newInstance((Long) object);
+
+					base.add(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			} else if (object instanceof byte[]) {
 				log.fine("Adding byte array to list");
 				base.add(new NBTTagByteArray((byte[]) object));
@@ -314,4 +408,5 @@ public class TagManager {
 		}
 		return base;
 	}
+	
 }

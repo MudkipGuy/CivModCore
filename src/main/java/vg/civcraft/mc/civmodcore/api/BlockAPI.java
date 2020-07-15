@@ -4,9 +4,8 @@ import static vg.civcraft.mc.civmodcore.util.NullCoalescing.chain;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import net.minecraft.server.v1_14_R1.BlockProperties;
-import net.minecraft.server.v1_14_R1.BlockState;
-import net.minecraft.server.v1_14_R1.IBlockState;
+import net.minecraft.server.v1_16_R1.BlockProperties;
+import net.minecraft.server.v1_16_R1.IBlockState;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,8 +22,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Chest;
 import org.bukkit.block.data.type.Switch;
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_14_R1.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R1.block.CraftBlock;
 import org.bukkit.material.Button;
 import org.bukkit.util.BlockIterator;
 
@@ -48,27 +47,6 @@ public final class BlockAPI {
 			BlockFace.SOUTH,
 			BlockFace.WEST,
 			BlockFace.EAST);
-	
-	private static final Map<String, BlockState<?>> blockStateByIdentifier = new HashMap<>();
-	
-	static  {
-		for(Field field : BlockProperties.class.getFields()) {
-			if (!BlockState.class.isAssignableFrom(field.getType())) {
-				continue;
-			}
-			field.setAccessible(true);
-			BlockState<?> bs;
-			try {
-				bs = (BlockState<?>)field.get(null);
-			} catch (IllegalArgumentException | IllegalAccessException e) {
-				e.printStackTrace();
-				continue;
-			}
-			//when updating, search for the method returning the string given in the constructor
-			String key = bs.a();
-			blockStateByIdentifier.put(key, bs);
-		}
-	}
 
 	/**
 	 * <p>Checks whether this block is valid and so can be handled reasonably without error.</p>
@@ -295,30 +273,6 @@ public final class BlockAPI {
 			throw new IllegalArgumentException("Block iterator requires a range of 1 or higher.");
 		}
 		return new BlockIterator(block.getWorld(), block.getLocation().toVector(), face.getDirection(), 0, range);
-	}
-
-	public static boolean setBlockProperty(Block block, String key, String value) {
-		//we need this wrapper method to trick the java generics
-		return innerSetBlockProperty(block, key, value);
-	}
-
-	// WHY IS THIS PUBLIC IF IT'S INNER?
-	public static <V extends Comparable<V>> boolean innerSetBlockProperty(Block block, String key, String value) {
-		@SuppressWarnings("unchecked")
-		IBlockState<V> state = (IBlockState<V>) blockStateByIdentifier.get(key);
-		if (state == null) {
-			return false;
-		}
-		Optional<V> opt = state.b(value);
-		if (!opt.isPresent()) {
-			return false;
-		}
-		V valueToSet = state.b(value).get();
-		CraftBlock cb = (CraftBlock) block;
-		CraftWorld world = (CraftWorld) block.getWorld();
-		//no idea what the last integer parameter does, I found 2 and 3 being used in NMS code and stuck to that
-		world.getHandle().setTypeAndData(cb.getPosition(), cb.getNMS().set( state, valueToSet), 2);
-		return true;
 	}
 
 }

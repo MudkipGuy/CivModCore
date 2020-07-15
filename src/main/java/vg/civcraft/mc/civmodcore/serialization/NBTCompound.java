@@ -6,22 +6,23 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
-import net.minecraft.server.v1_14_R1.NBTBase;
-import net.minecraft.server.v1_14_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_14_R1.NBTReadLimiter;
-import net.minecraft.server.v1_14_R1.NBTTagCompound;
-import net.minecraft.server.v1_14_R1.NBTTagDouble;
-import net.minecraft.server.v1_14_R1.NBTTagFloat;
-import net.minecraft.server.v1_14_R1.NBTTagList;
-import net.minecraft.server.v1_14_R1.NBTTagLong;
-import net.minecraft.server.v1_14_R1.NBTTagShort;
-import net.minecraft.server.v1_14_R1.NBTTagString;
+import net.minecraft.server.v1_16_R1.NBTBase;
+import net.minecraft.server.v1_16_R1.NBTCompressedStreamTools;
+import net.minecraft.server.v1_16_R1.NBTReadLimiter;
+import net.minecraft.server.v1_16_R1.NBTTagCompound;
+import net.minecraft.server.v1_16_R1.NBTTagDouble;
+import net.minecraft.server.v1_16_R1.NBTTagFloat;
+import net.minecraft.server.v1_16_R1.NBTTagList;
+import net.minecraft.server.v1_16_R1.NBTTagLong;
+import net.minecraft.server.v1_16_R1.NBTTagShort;
+import net.minecraft.server.v1_16_R1.NBTTagString;
 import org.apache.commons.lang.reflect.FieldUtils;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import vg.civcraft.mc.civmodcore.api.ItemAPI;
 import vg.civcraft.mc.civmodcore.util.Iteration;
@@ -87,7 +88,7 @@ public class NBTCompound implements Cloneable, Validation {
 	 * @return The size of the tag compound.
 	 */
 	public int size() {
-		return this.tag.d();
+		return this.tag.e();
 	}
 
 	/**
@@ -541,7 +542,15 @@ public class NBTCompound implements Cloneable, Validation {
 		else {
 			NBTTagList list = new NBTTagList();
 			for (short value : values) {
-				list.add(new NBTTagShort(value));
+				try {
+					Constructor<NBTTagShort> constructor = NBTTagShort.class.getDeclaredConstructor(short.class);
+					constructor.setAccessible(true);
+					NBTTagShort result = constructor.newInstance(value);
+					
+					list.add(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			this.tag.set(key, list);
 		}
@@ -648,7 +657,15 @@ public class NBTCompound implements Cloneable, Validation {
 		else {
 			NBTTagList list = new NBTTagList();
 			for (float value : values) {
-				list.add(new NBTTagFloat(value));
+				try {
+					Constructor<NBTTagFloat> constructor = NBTTagFloat.class.getDeclaredConstructor(float.class);
+					constructor.setAccessible(true);
+					NBTTagFloat result = constructor.newInstance(value);
+					
+					list.add(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			this.tag.set(key, list);
 		}
@@ -684,7 +701,15 @@ public class NBTCompound implements Cloneable, Validation {
 		else {
 			NBTTagList list = new NBTTagList();
 			for (double value : values) {
-				list.add(new NBTTagDouble(value));
+				try {
+					Constructor<NBTTagDouble> constructor = NBTTagDouble.class.getDeclaredConstructor(double.class);
+					constructor.setAccessible(true);
+					NBTTagDouble result = constructor.newInstance(value);
+					
+					list.add(result);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			this.tag.set(key, list);
 		}
@@ -733,10 +758,26 @@ public class NBTCompound implements Cloneable, Validation {
 			NBTTagList list = new NBTTagList();
 			for (String value : values) {
 				if (value == null) {
-					list.add(new NBTTagString(NULL_STRING));
+					try {
+						Constructor<NBTTagString> constructor = NBTTagString.class.getDeclaredConstructor(String.class);
+						constructor.setAccessible(true);
+						NBTTagString result = constructor.newInstance(NULL_STRING);
+						
+						list.add(result);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 				else {
-					list.add(new NBTTagString(value));
+					try {
+						Constructor<NBTTagString> constructor = NBTTagString.class.getDeclaredConstructor(String.class);
+						constructor.setAccessible(true);
+						NBTTagString result = constructor.newInstance(value);
+						
+						list.add(result);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			this.tag.set(key, list);
@@ -867,7 +908,7 @@ public class NBTCompound implements Cloneable, Validation {
 		if (item == null) {
 			return null;
 		}
-		net.minecraft.server.v1_14_R1.ItemStack craftItem = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_16_R1.ItemStack craftItem = CraftItemStack.asNMSCopy(item);
 		if (craftItem == null) {
 			return null;
 		}
@@ -898,7 +939,7 @@ public class NBTCompound implements Cloneable, Validation {
 	public static ItemStack processItem(ItemStack item, Consumer<NBTCompound> processor) {
 		Preconditions.checkArgument(ItemAPI.isValidItem(item));
 		Preconditions.checkArgument(processor != null);
-		net.minecraft.server.v1_14_R1.ItemStack craftItem = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_16_R1.ItemStack craftItem = CraftItemStack.asNMSCopy(item);
 		if (craftItem == null) {
 			return null;
 		}

@@ -902,6 +902,7 @@ public final class MaterialAPI {
 			case RED_MUSHROOM:
 			case RED_TULIP:
 			case SPRUCE_SAPLING:
+			case WARPED_FUNGUS:
 			case WHITE_TULIP:
 			case WITHER_ROSE:
 				return true;
@@ -1118,6 +1119,8 @@ public final class MaterialAPI {
 			case JUNGLE_FENCE_GATE:
 			case OAK_FENCE_GATE:
 			case SPRUCE_FENCE:
+			case CRIMSON_FENCE_GATE:
+			case WARPED_FENCE_GATE:
 				return true;
 			default:
 				return false;
@@ -1180,12 +1183,14 @@ public final class MaterialAPI {
 		if (material == null) {
 			return false;
 		}
-		if (Tag.DIRT_LIKE.getValues().contains(material)) {
-			return true;
-		}
 		switch (material) {
+			case COARSE_DIRT:
+			case DIRT:
 			case FARMLAND:
+			case GRASS_BLOCK:
 			case GRASS_PATH:
+			case MYCELIUM:
+			case PODZOL:
 				return true;
 			default:
 				return false;
@@ -1228,6 +1233,7 @@ public final class MaterialAPI {
 			case IRON_SWORD:
 			case GOLDEN_SWORD:
 			case DIAMOND_SWORD:
+			case NETHERITE_SWORD:
 				return true;
 			default:
 				return false;
@@ -1250,6 +1256,7 @@ public final class MaterialAPI {
 			case IRON_PICKAXE:
 			case GOLDEN_PICKAXE:
 			case DIAMOND_PICKAXE:
+			case NETHERITE_PICKAXE:
 				return true;
 			default:
 				return false;
@@ -1272,6 +1279,7 @@ public final class MaterialAPI {
 			case IRON_AXE:
 			case GOLDEN_AXE:
 			case DIAMOND_AXE:
+			case NETHERITE_AXE:
 				return true;
 			default:
 				return false;
@@ -1294,6 +1302,7 @@ public final class MaterialAPI {
 			case IRON_SHOVEL:
 			case GOLDEN_SHOVEL:
 			case DIAMOND_SHOVEL:
+			case NETHERITE_SHOVEL:
 				return true;
 			default:
 				return false;
@@ -1316,6 +1325,7 @@ public final class MaterialAPI {
 			case IRON_HOE:
 			case GOLDEN_HOE:
 			case DIAMOND_HOE:
+			case NETHERITE_HOE:
 				return true;
 			default:
 				return false;
@@ -1339,6 +1349,7 @@ public final class MaterialAPI {
 			case GOLDEN_HELMET:
 			case DIAMOND_HELMET:
 			case TURTLE_HELMET:
+			case NETHERITE_HELMET:
 				return true;
 			default:
 				return false;
@@ -1361,6 +1372,7 @@ public final class MaterialAPI {
 			case IRON_CHESTPLATE:
 			case GOLDEN_CHESTPLATE:
 			case DIAMOND_CHESTPLATE:
+			case NETHERITE_CHESTPLATE:
 				return true;
 			default:
 				return false;
@@ -1383,6 +1395,7 @@ public final class MaterialAPI {
 			case IRON_LEGGINGS:
 			case GOLDEN_LEGGINGS:
 			case DIAMOND_LEGGINGS:
+			case NETHERITE_LEGGINGS:
 				return true;
 			default:
 				return false;
@@ -1405,6 +1418,7 @@ public final class MaterialAPI {
 			case IRON_BOOTS:
 			case GOLDEN_BOOTS:
 			case DIAMOND_BOOTS:
+			case NETHERITE_BOOTS:
 				return true;
 			default:
 				return false;
